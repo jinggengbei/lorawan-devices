@@ -21,11 +21,12 @@
     <div class="item-12">
       <div class="device-single__cta">
         {{ with (index .Params.resellerURLs 0) }}
-            <a href="{{ .url }}" class="btn primary">Buy Device</a>
+            <a href="{{ .url }}" class="ttui-btn btn-primary">Buy Device</a>
         {{ end }}
         {{with .Params.producturl}}
-          <a href="{{ . }}" class="btn primary">Partner Webpage</a>
+          <a href="{{ . }}" class="ttui-btn btn-primary">Partner Webpage</a>
         {{ end }}
+        <button class="ttui-btn btn-primary" id="partner-toggle">Contact Partner</button>
       </div>
     </div>
     <div class="item-12">
@@ -60,6 +61,37 @@
     </div>
   </div>
 
+  <div class="contact contact--hidden js-contact" >
+      <form id="contact" name="contact" >
+        <div class="grid">
+          <div class="item-10">
+            <h3>Contact Partner</h3>
+          </div>
+          <div class="item-2">
+            <span id="partner-cross" type="button">x</span>
+          </div>
+          <div class="item-6">
+            <label>Full Name*</label>
+            <input type="text" id="name" placeholder="Enter text" name="name" required/>
+          </div>
+          <div class="item-6">
+            <label>Company Name</label>
+            <input type="text" id="company" placeholder="Enter text" name="company" required />
+          </div>
+          <div class="item-12">
+            <label>Email*</label>
+            <input type="email" id="email" placeholder="Enter text"  name="email" />
+          </div>
+          <div class="item-12">
+            <label>Message*</label>
+            <textarea id="message" placeholder="Enter text" name="message" required></textarea>
+          </div>
+          <div class="item-12">
+            <button class="ttui-btn btn-primary" type="submit">Send</button>
+          </div>
+        </div>
+      </form>
+  </div>
 
 </section>
 
@@ -67,6 +99,33 @@
   var config = {
     device: JSON.parse("{{ .Params | jsonify }}")
   }
+
+  document.getElementById('partner-toggle').addEventListener("click", handleContact, false)
+  document.getElementById('partner-cross').addEventListener("click", handleContact, false)
+  document.getElementById('contact').addEventListener("submit", handleSubmit);
+
+  function handleContact() {
+    const form = document.getElementsByClassName('js-contact')[0].classList.toggle("contact--hidden")
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault()
+
+    fetch('http://localhost:9000/api/partners/contact-partner/', {
+      method: 'POST',
+      body: JSON.stringify(Object.fromEntries(new FormData(e.target))),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8'
+      }
+    }).then(function (response) {
+      console.log(response)
+      if (response.ok) {
+        e.target.reset()
+        handleContact()
+      }
+    })
+  }
+
 </script>
 
 <script src="{{- (index .Site.Data.manifest `device_single.js`) | relURL -}}"></script>
