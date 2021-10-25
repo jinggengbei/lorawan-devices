@@ -111,7 +111,7 @@
   function handleSubmit(e) {
     e.preventDefault()
 
-    fetch('http://localhost:9000/api/partners/contact-partner/', {
+    fetch('https://www.thethingsnetwork.org/api/partners/contact-partner/', {
       method: 'POST',
       body: JSON.stringify(Object.fromEntries(new FormData(e.target))),
       headers: {
